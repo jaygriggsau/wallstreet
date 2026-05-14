@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { db, s } from "@/db";
 import { dollars, pct } from "@/lib/format";
+import { maybeTick } from "@/lib/market";
 
 export const dynamic = "force-dynamic";
 
 export default async function MarketPage() {
+  await maybeTick();
   const rows = await db.select().from(s.stocks).orderBy(s.stocks.symbol);
   return (
     <div>

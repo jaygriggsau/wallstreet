@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db, s } from "@/db";
+
+const TICK_INTERVAL_MS = 30_000;
 
 function gaussian() {
   let u = 0, v = 0;
@@ -27,4 +29,27 @@ export async function tickMarket() {
     });
   }
   return rows.length;
+}
+
+let lastTickAttempt = 0;
+
+export async function maybeTick() {
+  const now = Date.now();
+  if (now - lastTickAttempt < TICK_INTERVAL_MS) return false;
+  lastTickAttempt = now;
+
+  const newest = (
+    await db
+      .select({ updatedAt: s.stocks.updatedAt })
+      .from(s.stocks)
+      .orderBy(sql`updated_at desc`)
+      .limit(1)
+  ).at(0);
+
+  if (newest && now - new Date(newest.updatedAt).getTime() < TICK_INTERVAL_MS) {
+    return false;
+  }
+
+  await tickMarket();
+  return true;
 }

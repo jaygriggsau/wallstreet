@@ -7,7 +7,7 @@ A browser-based stock-trading game inspired by Wallstreet Raiders. Vercel-native
 - Auth.js v5 (Credentials provider, JWT sessions, Drizzle adapter)
 - Neon Postgres via `@neondatabase/serverless` + Drizzle ORM
 - Tailwind CSS
-- Vercel Cron (`vercel.json`) hits `/api/cron/tick` every minute to evolve prices
+- Vercel Cron (`vercel.json`) hits `/api/cron/tick` daily as a safety net; pages lazy-tick every ~30s on view (Hobby-plan friendly)
 
 ## Game (MVP)
 - Sign in with any email/password (account auto-created, $10,000 starting cash)
