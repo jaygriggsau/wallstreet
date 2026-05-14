@@ -3,6 +3,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { db, s } from "@/db";
 import { auth } from "@/auth";
 import { dollars, pct } from "@/lib/format";
+import { maybeTick } from "@/lib/market";
 import { TradeForm } from "./trade-form";
 
 export const dynamic = "force-dynamic";
@@ -12,6 +13,7 @@ export default async function StockPage({
 }: {
   params: Promise<{ symbol: string }>;
 }) {
+  await maybeTick();
   const { symbol } = await params;
   const stock = (await db.select().from(s.stocks).where(eq(s.stocks.symbol, symbol.toUpperCase()))).at(0);
   if (!stock) notFound();
